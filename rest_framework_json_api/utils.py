@@ -78,6 +78,14 @@ def get_resource_name(context):
     return resource_name
 
 
+def get_meta_fields(serializer):
+    if hasattr(serializer, 'child'):
+        meta = getattr(serializer.child, 'Meta', None)
+    else:
+        meta = getattr(serializer, 'Meta', None)
+    return getattr(meta, 'meta_fields', [])
+
+
 def get_serializer_fields(serializer):
     fields = None
     if hasattr(serializer, 'child'):

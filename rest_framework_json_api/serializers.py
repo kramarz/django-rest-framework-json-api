@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.exceptions import ParseError
 from rest_framework.serializers import *
 
+from rest_framework_json_api import utils
 from rest_framework_json_api.relations import ResourceRelatedField
 from rest_framework_json_api.utils import (
     get_resource_type_from_model, get_resource_type_from_instance,
@@ -55,10 +56,13 @@ class SparseFieldsetsMixin(object):
                 pass
             else:
                 fieldset = request.query_params.get(param_name).split(',')
+                meta_fields = utils.get_meta_fields(self)
                 # iterate over a *copy* of self.fields' underlying OrderedDict, because we may modify the
                 # original during the iteration. self.fields is a `rest_framework.utils.serializer_helpers.BindingDict`
                 for field_name, field in self.fields.fields.copy().items():
                     if field_name == api_settings.URL_FIELD_NAME:  # leave self link there
+                        continue
+                    if field_name in meta_fields: #fields in meta should be always displayed
                         continue
                     if field_name not in fieldset:
                         self.fields.pop(field_name)

@@ -354,11 +354,7 @@ class JSONRenderer(renderers.JSONRenderer):
 
     @classmethod
     def extract_meta(cls, serializer, resource):
-        if hasattr(serializer, 'child'):
-            meta = getattr(serializer.child, 'Meta', None)
-        else:
-            meta = getattr(serializer, 'Meta', None)
-        meta_fields = getattr(meta, 'meta_fields', [])
+        meta_fields = utils.get_meta_fields(serializer)
         data = OrderedDict()
         for field_name in meta_fields:
             data.update({
